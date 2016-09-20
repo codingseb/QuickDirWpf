@@ -12,12 +12,15 @@
         Top="0"
         Left="0">
     <StackPanel>
-        <TextBox Name="txtDirRequest" TextChanged="txtDirRequest_TextChanged" >
+        <TextBox Name="txtDirRequest" TextChanged="txtDirRequest_TextChanged">
             <controls:WatermarkService.Watermark>
                 <TextBlock Margin="4,2" FontSize="14">Search folder here (F5 or Ctrl+Enter Show the folder, F6 or Alt+Enter open terminal on folder)</TextBlock>
             </controls:WatermarkService.Watermark>
         </TextBox>
-        <ListBox Name="lbCompletion" >
+        <ListBox Name="lbCompletion" 
+                 MaxHeight="{Binding MaxHeight}" 
+                 SelectionChanged="lbCompletion_SelectionChanged"
+                 MouseDoubleClick="lbCompletion_MouseDoubleClick">
             <ListBox.Resources>
                 <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="{x:Static SystemColors.HighlightColor}"/>
                 <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="{x:Static SystemColors.HighlightTextColor}" />
