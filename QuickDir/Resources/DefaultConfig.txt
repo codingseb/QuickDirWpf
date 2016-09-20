@@ -1,4 +1,5 @@
 {
     Favs: { },
-    MaxHeight: 300 
+	CloseOnEscape: true,
+    MaxHeight: 300, 
 }

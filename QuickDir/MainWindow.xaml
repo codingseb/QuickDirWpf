@@ -10,7 +10,7 @@
         Icon="{StaticResource Icon}" 
         ResizeMode="CanMinimize"
         Top="0"
-        Left="0">
+        Left="0" WindowStyle="None">
     <StackPanel>
         <TextBox Name="txtDirRequest" TextChanged="txtDirRequest_TextChanged">
             <controls:WatermarkService.Watermark>

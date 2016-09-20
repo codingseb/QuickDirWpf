@@ -6,10 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.IO;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace QuickDir
 {
-    public class Config
+    public class Config : INotifyPropertyChanged
     {
         private static Config instance = null;
 
@@ -73,6 +75,51 @@ namespace QuickDir
                     return defaultConfig.MaxHeight;
                 }
             }
+
+            set 
+            {
+                try
+                {
+                    config.MaxHeight = value;
+                    Save();
+                }
+                catch { }
+
+                NotifyPropertyChanged();
+            }
+        }
+
+        public bool CloseOnEscape
+        {
+            get
+            {
+                try
+                {
+                    return config.CloseOnEscape;
+                }
+                catch
+                {
+                    try
+                    {
+                        config.CloseOnEscape = defaultConfig.CloseOnEscape;
+                        Save();
+                    }
+                    catch { }
+                    return defaultConfig.CloseOnEscape;
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    config.CloseOnEscape = value;
+                    Save();
+                }
+                catch { }
+
+                NotifyPropertyChanged();
+            }
         }
 
         public bool SetFav(string key, string path)
@@ -104,7 +151,15 @@ namespace QuickDir
 
         private void Save()
         {
-            File.WriteAllText(fileName, JsonConvert.SerializeObject(config));
+            File.WriteAllText(fileName, JsonConvert.SerializeObject(config, Formatting.Indented));
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public virtual void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

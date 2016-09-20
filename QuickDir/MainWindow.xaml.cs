@@ -41,7 +41,10 @@ namespace QuickDir
                 {
                     if (txtDirRequest.Text.Equals(string.Empty))
                     {
-                        this.WindowState = System.Windows.WindowState.Minimized;
+                        if (Config.Instance.CloseOnEscape)
+                            this.Close();
+                        else
+                            this.WindowState = System.Windows.WindowState.Minimized;
                     }
                     else
                     {
@@ -91,6 +94,22 @@ namespace QuickDir
                     else
                     {
                         lbCompletion.SelectedIndex = 0;
+                    }
+                }
+                else if(e.Key == Key.PageDown && lbCompletion.Items.Count > 0)
+                {
+                    lbCompletion.Focus();
+                }
+                else if (e.Key == Key.PageUp && lbCompletion.Items.Count > 0)
+                {
+                    lbCompletion.Focus();
+                }
+                else
+                {
+                    if(!txtDirRequest.IsFocused)
+                    {
+                        txtDirRequest.Focus();
+                        txtDirRequest.Select(txtDirRequest.Text.Length, 0);
                     }
                 }
             }
@@ -209,6 +228,12 @@ namespace QuickDir
         private void lbCompletion_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             lbCompletion.ScrollIntoView(lbCompletion.SelectedItem);
+            
+            if (!txtDirRequest.IsFocused)
+            {
+                txtDirRequest.Focus();
+                txtDirRequest.Select(txtDirRequest.Text.Length, 0);
+            }
         }
 
         private void lbCompletion_MouseDoubleClick(object sender, MouseButtonEventArgs e)
