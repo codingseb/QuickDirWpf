@@ -30,6 +30,7 @@ namespace QuickDir
             InitializeComponent();
             txtDirRequest.Focus();
             FillCompletion();
+            this.DataContext = Config.Instance;
         }
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -47,6 +48,10 @@ namespace QuickDir
                         txtDirRequest.Text = string.Empty;
                     }
                 }
+                else if (e.Key == Key.System && e.SystemKey == Key.Enter)
+                {
+                    CmdOn(e);
+                }
                 else if (e.Key == Key.Enter)
                 {
                     if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
@@ -55,17 +60,16 @@ namespace QuickDir
                     }
                     else
                     {
-                        if(lbCompletion.Items.Count > 0 && lbCompletion.SelectedItem != null)
-                        {
-                            txtDirRequest.Text = lbCompletion.SelectedItem.ToString();
-                            txtDirRequest.Select(txtDirRequest.Text.Length, 0);
-                            e.Handled = true;
-                        }
+                        Validate();
                     }
                 }
                 else if(e.Key == Key.F5)
                 {
                     ShowDir(e);
+                }
+                else if(e.Key == Key.F6)
+                {
+                    CmdOn(e);
                 }
                 else if(e.Key == Key.Up && lbCompletion.Items.Count > 0)
                 {
@@ -103,6 +107,18 @@ namespace QuickDir
             }
         }
 
+        private void CmdOn(KeyEventArgs e = null)
+        {
+            if (Directory.Exists(txtDirRequest.Text))
+            {
+                ProcessStartInfo psi = new ProcessStartInfo("cmd");
+                psi.WorkingDirectory = txtDirRequest.Text;
+                Process.Start(psi);
+                if (e != null)
+                    e.Handled = true;
+            }
+        }
+
         private void txtDirRequest_TextChanged(object sender, TextChangedEventArgs e)
         {
             FillCompletion();
@@ -110,27 +126,96 @@ namespace QuickDir
 
         private void FillCompletion()
         {
-            List<string> levels = txtDirRequest.Text.Split('\\', '/').ToList();
+            List<string> completeList = new List<string>();
 
-            if(levels.Count == 1)
+            try
             {
-                lbCompletion.ItemsSource = Directory.GetLogicalDrives()
-                    .ToList()
-                    .FindAll(drive => drive.ToLower().StartsWith(levels[0].ToLower()));
+                List<string> levels = txtDirRequest.Text.Split('\\', '/').ToList();
+                string fav = Config.Instance.GetFav(txtDirRequest.Text);
+                
+
+                if (levels.Count == 1)
+                {
+                    completeList = Directory.GetLogicalDrives()
+                        .ToList()
+                        .FindAll(drive => drive.ToLower().StartsWith(levels[0].ToLower()));
+                }
+                else
+                {
+                    string parentDir = parentDirRegex.Replace(txtDirRequest.Text, "");
+                    string searchSubDir = levels.Last();
+
+                    completeList = Directory.GetDirectories(parentDir, searchSubDir + "*")
+                        .ToList()
+                        .ConvertAll(p => p + @"\");
+                }
+
+                if(fav != null && !fav.Equals(string.Empty))
+                    completeList.Insert(0, fav);
             }
-            else
-            {
-                string parentDir = parentDirRegex.Replace(txtDirRequest.Text, "");
-                string searchSubDir = levels.Last();
+            catch
+            {}
 
-                lbCompletion.ItemsSource = Directory.GetDirectories(parentDir, searchSubDir + "*")
-                    .ToList()
-                    .ConvertAll(p => p + @"\");
+            try
+            {
+                lbCompletion.ItemsSource = completeList;
+            }
+            catch
+            {
+                lbCompletion.ItemsSource = null;
             }
 
             if(lbCompletion.Items.Count > 0)
             {
                 lbCompletion.SelectedIndex = 0;
+            }
+        }
+
+        private void Validate(KeyEventArgs e = null)
+        {
+            string[] favEqArray = txtDirRequest.Text.Split('=');
+            string[] favGtArray = txtDirRequest.Text.Split('>');
+
+            if(favEqArray.Length == 2
+                && Directory.Exists(favEqArray[1])
+                && !favEqArray[0].Equals(string.Empty))
+            {
+                if (Config.Instance.SetFav(favEqArray[0], favEqArray[1]))
+                    SetFieldValue(favEqArray[0]);
+            }
+            else if(favGtArray.Length == 2
+                && Directory.Exists(favGtArray[0])
+                && !favGtArray[1].Equals(string.Empty))
+            {
+                if (Config.Instance.SetFav(favGtArray[1], favGtArray[0]))
+                    SetFieldValue(favGtArray[1]);
+            }
+            else if (lbCompletion.Items.Count > 0 && lbCompletion.SelectedItem != null)
+            {
+                SetFieldValue(lbCompletion.SelectedItem.ToString());
+
+                if (e != null)
+                    e.Handled = true;
+            }
+        }
+
+        private void SetFieldValue(string value)
+        {
+            txtDirRequest.Text = value;
+            txtDirRequest.Select(value.Length, 0);
+            txtDirRequest.Focus();
+        }
+
+        private void lbCompletion_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            lbCompletion.ScrollIntoView(lbCompletion.SelectedItem);
+        }
+
+        private void lbCompletion_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if(lbCompletion.SelectedItem != null)
+            {
+                SetFieldValue(lbCompletion.SelectedItem.ToString());
             }
         }
     }
