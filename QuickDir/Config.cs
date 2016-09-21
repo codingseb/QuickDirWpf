@@ -8,6 +8,9 @@ using Newtonsoft.Json;
 using System.IO;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Dynamic;
+using System.Reflection;
+using Newtonsoft.Json.Linq;
 
 namespace QuickDir
 {
@@ -119,6 +122,26 @@ namespace QuickDir
                 catch { }
 
                 NotifyPropertyChanged();
+            }
+        }
+
+        public List<string> FavsList
+        {
+            get
+            {
+                List<string> result = new List<string>();
+
+                try
+                {
+                    string json = JsonConvert.SerializeObject(config);
+                    JObject parsed = JObject.Parse(json);
+                    Dictionary<string, string> favsDict = parsed["Favs"].ToObject<Dictionary<string, string>>();
+
+                    result = favsDict.Keys.ToList();
+                }
+                catch { }
+
+                return result;
             }
         }
 

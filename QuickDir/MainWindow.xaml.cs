@@ -151,13 +151,18 @@ namespace QuickDir
             {
                 List<string> levels = txtDirRequest.Text.Split('\\', '/').ToList();
                 string fav = Config.Instance.GetFav(txtDirRequest.Text);
-                
 
                 if (levels.Count == 1)
                 {
                     completeList = Directory.GetLogicalDrives()
                         .ToList()
                         .FindAll(drive => drive.ToLower().StartsWith(levels[0].ToLower()));
+
+                    if (!levels[0].ToLower().Equals(string.Empty))
+                        completeList.AddRange(Config.Instance.FavsList
+                            .FindAll(e => 
+                                e.ToLower().StartsWith(levels[0].ToLower())
+                                && !e.ToLower().Equals(levels[0].ToLower())));
                 }
                 else
                 {
