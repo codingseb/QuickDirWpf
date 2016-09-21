@@ -35,6 +35,14 @@
                     </Style.Triggers>
                 </Style>
             </ListBox.Style>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal" Margin="3">
+                        <TextBlock Text="{Binding MainText}" Margin="0,0,8,0"/>
+                        <TextBlock Text="{Binding InfoText}" Foreground="Gray" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
         </ListBox>
     </StackPanel>
 </Window>

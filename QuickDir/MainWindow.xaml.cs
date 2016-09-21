@@ -145,37 +145,41 @@ namespace QuickDir
 
         private void FillCompletion()
         {
-            List<string> completeList = new List<string>();
+            List<AutoCompleteItem> completeList = new List<AutoCompleteItem>();
 
             try
             {
-                List<string> levels = txtDirRequest.Text.Split('\\', '/').ToList();
-                string fav = Config.Instance.GetFav(txtDirRequest.Text);
-
-                if (levels.Count == 1)
+                if (txtDirRequest.Text.StartsWith(">"))
                 {
-                    completeList = Directory.GetLogicalDrives()
-                        .ToList()
-                        .FindAll(drive => drive.ToLower().StartsWith(levels[0].ToLower()));
-
-                    if (!levels[0].ToLower().Equals(string.Empty))
-                        completeList.AddRange(Config.Instance.FavsList
-                            .FindAll(e => 
-                                e.ToLower().StartsWith(levels[0].ToLower())
-                                && !e.ToLower().Equals(levels[0].ToLower())));
+                    completeList = GetCommands();
                 }
                 else
                 {
-                    string parentDir = parentDirRegex.Replace(txtDirRequest.Text, "");
-                    string searchSubDir = levels.Last();
+                    List<string> levels = txtDirRequest.Text.Split('\\', '/').ToList();
+                    string fav = Config.Instance.GetFav(txtDirRequest.Text);
 
-                    completeList = Directory.GetDirectories(parentDir, searchSubDir + "*")
-                        .ToList()
-                        .ConvertAll(p => p + @"\");
+                    if (levels.Count == 1)
+                    {
+                        completeList = Directory.GetLogicalDrives()
+                            .ToList()
+                            .FindAll(drive => drive.ToLower().StartsWith(levels[0].ToLower()))
+                            .ConvertAll(drive => new AutoCompleteItem(drive));
+
+                        completeList.AddRange(Config.Instance.FavsList
+                            .FindAll(e => e.ToLower().StartsWith(levels[0].ToLower()))
+                            .ConvertAll(f => new AutoCompleteItem(f, Config.Instance.GetFav(f), Config.Instance.GetFav(f))));
+                    }
+                    else
+                    {
+                        string parentDir = parentDirRegex.Replace(txtDirRequest.Text, "");
+                        string searchSubDir = levels.Last();
+
+                        completeList = Directory.GetDirectories(parentDir, searchSubDir + "*")
+                            .ToList()
+                            .ConvertAll(p => new AutoCompleteItem(p + @"\"));
+                    }
+
                 }
-
-                if(fav != null && !fav.Equals(string.Empty))
-                    completeList.Insert(0, fav);
             }
             catch
             {}
@@ -195,10 +199,16 @@ namespace QuickDir
             }
         }
 
+        private List<AutoCompleteItem> GetCommands()
+        {
+            List<AutoCompleteItem> commands = new List<AutoCompleteItem>();
+
+            return commands;
+        }
+
         private void Validate(KeyEventArgs e = null)
         {
             string[] favEqArray = txtDirRequest.Text.Split('=');
-            string[] favGtArray = txtDirRequest.Text.Split('>');
 
             if(favEqArray.Length == 2
                 && Directory.Exists(favEqArray[1])
@@ -207,16 +217,16 @@ namespace QuickDir
                 if (Config.Instance.SetFav(favEqArray[0], favEqArray[1]))
                     SetFieldValue(favEqArray[0]);
             }
-            else if(favGtArray.Length == 2
-                && Directory.Exists(favGtArray[0])
-                && !favGtArray[1].Equals(string.Empty))
+            else if (favEqArray.Length == 2
+                && Directory.Exists(favEqArray[0])
+                && !favEqArray[1].Equals(string.Empty))
             {
-                if (Config.Instance.SetFav(favGtArray[1], favGtArray[0]))
-                    SetFieldValue(favGtArray[1]);
+                if (Config.Instance.SetFav(favEqArray[1], favEqArray[0]))
+                    SetFieldValue(favEqArray[1]);
             }
             else if (lbCompletion.Items.Count > 0 && lbCompletion.SelectedItem != null)
             {
-                SetFieldValue(lbCompletion.SelectedItem.ToString());
+                SetFieldValue(((AutoCompleteItem)lbCompletion.SelectedItem).AutoComplete);
 
                 if (e != null)
                     e.Handled = true;
