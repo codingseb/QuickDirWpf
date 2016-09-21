@@ -167,6 +167,8 @@ namespace QuickDir
 
                         completeList.AddRange(Config.Instance.FavsList
                             .FindAll(e => e.ToLower().StartsWith(levels[0].ToLower()))
+                            .OrderBy(e => e)
+                            .ToList()
                             .ConvertAll(f => new AutoCompleteItem(f, Config.Instance.GetFav(f), Config.Instance.GetFav(f))));
                     }
                     else
