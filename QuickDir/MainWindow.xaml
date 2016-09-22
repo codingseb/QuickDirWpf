@@ -12,9 +12,9 @@
         Top="0"
         Left="0" WindowStyle="None">
     <StackPanel>
-        <TextBox Name="txtDirRequest" TextChanged="txtDirRequest_TextChanged">
+        <TextBox Name="txtDirRequest" TextChanged="txtDirRequest_TextChanged" Padding="2">
             <controls:WatermarkService.Watermark>
-                <TextBlock Margin="4,2" FontSize="14">Search folder here (F5 or Ctrl+Enter Show the folder, F6 or Alt+Enter open terminal on folder)</TextBlock>
+                <TextBlock Margin="4,2" FontSize="14" VerticalAlignment="Center">Search folder here (F5 or Ctrl+Enter Show the folder, F6 or Alt+Enter open terminal on folder)</TextBlock>
             </controls:WatermarkService.Watermark>
         </TextBox>
         <ListBox Name="lbCompletion" 
@@ -35,6 +35,15 @@
                     </Style.Triggers>
                 </Style>
             </ListBox.Style>
+            <!--<ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem" >
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="BorderBrush" Value="Gray" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ListBox.ItemContainerStyle>-->
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal" Margin="3">
