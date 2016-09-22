@@ -255,10 +255,14 @@ namespace QuickDir
 
         private void lbCompletion_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if(lbCompletion.SelectedItem != null)
+            try
             {
-                SetFieldValue(lbCompletion.SelectedItem.ToString());
+                if (lbCompletion.SelectedItem != null)
+                {
+                    SetFieldValue((lbCompletion.SelectedItem as AutoCompleteItem).AutoComplete);
+                }
             }
+            catch { }
         }
     }
 }
