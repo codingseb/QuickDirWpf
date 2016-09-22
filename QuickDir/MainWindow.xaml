@@ -35,15 +35,6 @@
                     </Style.Triggers>
                 </Style>
             </ListBox.Style>
-            <!--<ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem" >
-                    <Style.Triggers>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="BorderBrush" Value="Gray" />
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </ListBox.ItemContainerStyle>-->
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal" Margin="3">
