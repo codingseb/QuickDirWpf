@@ -34,6 +34,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>quickdir.ico</ApplicationIcon>
@@ -66,6 +67,7 @@
     <Compile Include="Config.cs" />
     <Compile Include="Controls\WatermarkAdorner.cs" />
     <Compile Include="Controls\WatermarkService.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="QDCommands.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

@@ -28,6 +28,7 @@ namespace QuickDir
         public MainWindow()
         {
             InitializeComponent();
+            QDCommands.QDCommandFinished += QDCommands_QDCommandFinished;
             txtDirRequest.Focus();
             FillCompletion();
             this.DataContext = Config.Instance;
@@ -114,6 +115,11 @@ namespace QuickDir
                 }
             }
             catch { }
+        }
+
+        void QDCommands_QDCommandFinished(object sender, EventArgs e)
+        {
+            txtDirRequest.Text = string.Empty;
         }
 
         private bool IsCommand()
@@ -220,7 +226,10 @@ namespace QuickDir
                 {
                     QDCommands.Execute((lbCompletion.SelectedItem as AutoCompleteItem).AutoComplete);
                 }
-                catch { }
+                catch(Exception ex)
+                {
+                    MessageBox.Show("Une erreur est survenue : " + ex.Message);
+                }
             }
             else
             {
