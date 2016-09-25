@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 
@@ -10,6 +11,19 @@ namespace QuickDir
     public class QDCommands
     {
         public static event EventHandler QDCommandFinished;
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+
+        protected delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+        [DllImport("user32.dll")]
+        protected static extern bool EnumWindows(EnumWindowsProc enumProc, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, uint Msg, int wParam, int lParam);
+
+        public const int WM_SYSCOMMAND = 0x0112;
+        public const int SC_CLOSE = 0xF060;
 
         public static void Execute(string commandText)
         {
@@ -52,6 +66,23 @@ namespace QuickDir
             }
         }
 
+        private static string GetClassName(IntPtr hwnd)
+        {
+            int nRet;
+            // Pre-allocate 256 characters, since this is the maximum class name length.
+            StringBuilder className = new StringBuilder(100);
+            //Get the window class name
+            nRet = GetClassName(hwnd, className, className.Capacity);
+            if (nRet != 0)
+            {
+                return className.ToString();
+            }
+            else
+            {
+                return "";
+            }
+        }
+
         private static List<QDCommand> commandsList = (new QDCommand[]
         {
             new QDCommand("Set Close on Escape" , delegate()
@@ -65,11 +96,21 @@ namespace QuickDir
                 MessageBox.Show("A press on [Escape] when the field is empty will now minimize the application.");
             }),
             new QDCommand("Close all explorer windows", delegate(){
-                Process.GetProcesses()
-                    .ToList()
-                    .FindAll(p => p.GetClassName().Contains("CabinetWClass"))
-                    .ForEach(p => p.Kill());
+
+                EnumWindows(delegate(IntPtr hwnd, IntPtr lParam) {
+
+                    if(GetClassName(hwnd).Equals("CabinetWClass"))
+                    {
+                        SendMessage(hwnd, WM_SYSCOMMAND, SC_CLOSE, 0);
+                    }
+
+                    return true;
+                }
+                , IntPtr.Zero);
+
             })
         }).ToList();
+
+
     }
 }

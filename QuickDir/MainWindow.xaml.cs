@@ -220,42 +220,28 @@ namespace QuickDir
 
         private void Validate(KeyEventArgs e = null)
         {
-            if (IsCommand() && lbCompletion.SelectedItem != null)
+            string[] favEqArray = txtDirRequest.Text.Split('=');
+
+            if (favEqArray.Length == 2
+                && Directory.Exists(favEqArray[1])
+                && !favEqArray[0].Equals(string.Empty))
             {
-                try
-                {
-                    QDCommands.Execute((lbCompletion.SelectedItem as AutoCompleteItem).AutoComplete);
-                }
-                catch(Exception ex)
-                {
-                    MessageBox.Show("Une erreur est survenue : " + ex.Message);
-                }
+                if (Config.Instance.SetFav(favEqArray[0], favEqArray[1]))
+                    SetFieldValue(favEqArray[0]);
             }
-            else
+            else if (favEqArray.Length == 2
+                && Directory.Exists(favEqArray[0])
+                && !favEqArray[1].Equals(string.Empty))
             {
-                string[] favEqArray = txtDirRequest.Text.Split('=');
+                if (Config.Instance.SetFav(favEqArray[1], favEqArray[0]))
+                    SetFieldValue(favEqArray[1]);
+            }
+            else if (lbCompletion.Items.Count > 0)
+            {
+                ValidateAutoComplete();
 
-                if (favEqArray.Length == 2
-                    && Directory.Exists(favEqArray[1])
-                    && !favEqArray[0].Equals(string.Empty))
-                {
-                    if (Config.Instance.SetFav(favEqArray[0], favEqArray[1]))
-                        SetFieldValue(favEqArray[0]);
-                }
-                else if (favEqArray.Length == 2
-                    && Directory.Exists(favEqArray[0])
-                    && !favEqArray[1].Equals(string.Empty))
-                {
-                    if (Config.Instance.SetFav(favEqArray[1], favEqArray[0]))
-                        SetFieldValue(favEqArray[1]);
-                }
-                else if (lbCompletion.Items.Count > 0)
-                {
-                    ValidateAutoComplete();
-
-                    if (e != null)
-                        e.Handled = true;
-                }
+                if (e != null)
+                    e.Handled = true;
             }
         }
 
@@ -288,7 +274,21 @@ namespace QuickDir
             {
                 if (lbCompletion.SelectedItem != null)
                 {
-                    SetFieldValue((lbCompletion.SelectedItem as AutoCompleteItem).AutoComplete);
+                    if (IsCommand() && lbCompletion.SelectedItem != null)
+                    {
+                        try
+                        {
+                            QDCommands.Execute((lbCompletion.SelectedItem as AutoCompleteItem).AutoComplete);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Une erreur est survenue : " + ex.Message);
+                        }
+                    }
+                    else
+                    {
+                        SetFieldValue((lbCompletion.SelectedItem as AutoCompleteItem).AutoComplete);
+                    }
                 }
             }
             catch { }
