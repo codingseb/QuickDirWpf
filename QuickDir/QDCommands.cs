@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace QuickDir
 {
@@ -35,7 +36,7 @@ namespace QuickDir
 
         public static List<string> FindCommands(string text)
         {
-            string findTextPattern = ".*" + Regex.Replace(text, ".", delegate (Match match)
+            string findTextPattern = ".*" + Regex.Replace(text.Split(':')[0], ".", delegate (Match match)
             {
                 return match.Value + ".*";
             });
@@ -83,33 +84,61 @@ namespace QuickDir
             }
         }
 
+        private static void CloseAllWindowsWithClassName(string className)
+        {
+            EnumWindows(delegate (IntPtr hwnd, IntPtr lParam) {
+
+                if (GetClassName(hwnd).Equals(className))
+                {
+                    SendMessage(hwnd, WM_SYSCOMMAND, SC_CLOSE, 0);
+                }
+
+                return true;
+            }
+            , IntPtr.Zero);
+        }
+
         private static List<QDCommand> commandsList = (new QDCommand[]
         {
-            new QDCommand("Set Close on Escape" , delegate()
+            new QDCommand("Set Close on Escape key press" , delegate()
             {
                 Config.Instance.CloseOnEscape = true;
                 MessageBox.Show("A press on [Escape] when the field is empty will now close the application.");
             }),
-            new QDCommand("Set Minimize on Escape" , delegate()
+            new QDCommand("Set Minimize on Escape key press" , delegate()
             {
                 Config.Instance.CloseOnEscape = false;
                 MessageBox.Show("A press on [Escape] when the field is empty will now minimize the application.");
             }),
-            new QDCommand("Close all explorer windows", delegate(){
+            new QDCommand("Close all explorer windows", delegate()
+            {
+                CloseAllWindowsWithClassName("CabinetWClass");
+            }),
+            new QDCommand("Close all cmd terminal windows", delegate()
+            {
+                CloseAllWindowsWithClassName("ConsoleWindowClass");
+            }),
+            new QDCommand("Set Field Width", delegate()
+            {
+                TextBox txtField = MainWindow.Instance.txtDirRequest;
+                string[] commandsArgsArray = MainWindow.Instance.txtDirRequest.Text.Split(':');
 
-                EnumWindows(delegate(IntPtr hwnd, IntPtr lParam) {
+                if(commandsArgsArray.Length > 0)
+                {
 
-                    if(GetClassName(hwnd).Equals("CabinetWClass"))
-                    {
-                        SendMessage(hwnd, WM_SYSCOMMAND, SC_CLOSE, 0);
-                    }
-
-                    return true;
                 }
-                , IntPtr.Zero);
+                else
+                {
+                    string currentWidth = Convert.ToInt32(Math.Floor(MainWindow.Instance.Width)).ToString();
 
+                    txtField.Text += ":" + currentWidth;
+                    txtField.Select(txtField.Text.Length - currentWidth.Length, currentWidth.Length);
+
+                }
             })
-        }).ToList();
+        })
+        .OrderBy(command => command.Text)
+        .ToList();
 
 
     }

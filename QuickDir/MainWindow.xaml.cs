@@ -25,9 +25,20 @@ namespace QuickDir
     {
         Regex parentDirRegex = new Regex(@"[^\\/]*$");
 
-        public MainWindow()
+        private static MainWindow instance = null;
+
+        public static MainWindow Instance
+        {
+            get
+            {
+                return instance;
+            }
+        }
+
+        internal MainWindow()
         {
             InitializeComponent();
+            instance = this;
             QDCommands.QDCommandFinished += QDCommands_QDCommandFinished;
             txtDirRequest.Focus();
             FillCompletion();
