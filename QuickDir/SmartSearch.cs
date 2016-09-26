@@ -23,5 +23,12 @@ namespace QuickDir
                 + ".*";
             });
         }
+
+        public static List<string> SmartSearchInDirectories(string find)
+        {
+            string findPattern = GetRegexSmartSearchPattern(find);
+
+            return new List<string>();
+        }
     }
 }
