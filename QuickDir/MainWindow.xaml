@@ -4,7 +4,7 @@
         xmlns:controls="clr-namespace:Controls"
         Title="Quick Dir" 
         SizeToContent="Height" 
-        Width="850.898" 
+        Width="{Binding Width, Mode=TwoWay}" 
         FontSize="14" 
         PreviewKeyDown="Window_PreviewKeyDown" 
         Icon="{StaticResource Icon}" 

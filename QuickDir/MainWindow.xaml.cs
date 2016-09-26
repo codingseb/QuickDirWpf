@@ -184,14 +184,18 @@ namespace QuickDir
                     {
                         completeList = Directory.GetLogicalDrives()
                             .ToList()
-                            .FindAll(drive => drive.ToLower().StartsWith(levels[0].ToLower()))
+                            .FindAll(drive => Config.Instance.IsManaged(drive) && drive.ToLower().StartsWith(levels[0].ToLower()))
                             .ConvertAll(drive => new AutoCompleteItem(drive));
 
-                        completeList.AddRange(Config.Instance.FavsList
-                            .FindAll(e => e.ToLower().StartsWith(levels[0].ToLower()))
-                            .OrderBy(e => e)
-                            .ToList()
-                            .ConvertAll(f => new AutoCompleteItem(f, Config.Instance.GetFav(f), Config.Instance.GetFav(f))));
+                        if (Config.Instance.SearchFavByKeys)
+                        {
+                            completeList.AddRange(Config.Instance.FavsList
+                                .FindAll(e => e.ToLower().StartsWith(levels[0].ToLower()))
+                                .OrderBy(e => e)
+                                .ToList()
+                                .ConvertAll(f => new AutoCompleteItem(f, Config.Instance.GetFav(f), Config.Instance.GetFav(f))));
+                        }
+
                     }
                     else
                     {
@@ -200,13 +204,30 @@ namespace QuickDir
 
                         completeList = Directory.GetDirectories(parentDir, searchSubDir + "*")
                             .ToList()
+                            .FindAll(p => Config.Instance.IsManaged(p))
                             .ConvertAll(p => new AutoCompleteItem(p + @"\"));
+                    }
+
+                    if(Config.Instance.SmartSearchOnFavs)
+                    {
+                        string findTextPattern = SmartSearch.GetRegexSmartSearchPattern(txtDirRequest.Text);
+
+                        completeList.AddRange(Config.Instance.FavsList
+                            .FindAll(e => 
+                                Regex.IsMatch(Config.Instance.GetFav(e).ToLower(), findTextPattern.ToLower())
+                                && completeList.Find(a => a.MainText.ToLower().Equals(e.ToLower())) == null
+                                && !Config.Instance.GetFav(e).ToLower().ToLower().Equals(txtDirRequest.Text.ToLower()))
+                            .OrderBy(e => e)
+                            .ToList()
+                            .ConvertAll(f => new AutoCompleteItem(f, Config.Instance.GetFav(f), Config.Instance.GetFav(f))));
                     }
 
                 }
             }
-            catch
-            {}
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
 
             try
             {

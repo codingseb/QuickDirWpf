@@ -92,6 +92,69 @@ namespace QuickDir
             }
         }
 
+        public double Width
+        {
+            get
+            {
+                try
+                {
+                    return config.Width;
+                }
+                catch
+                {
+                    try
+                    {
+                        config.Width = defaultConfig.Width;
+                        Save();
+                    }
+                    catch { }
+                    return defaultConfig.Width;
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    config.Width = value;
+                    Save();
+                }
+                catch { }
+
+                NotifyPropertyChanged();
+            }
+        }
+
+        public List<string> NotManagedDirectories
+        {
+            get
+            {
+                List<string> list = null;
+
+                try
+                {
+                    list = (config.NotManagedDirectories as JArray).Select(x => x.Value<string>()).ToList();
+                }
+                catch
+                { }
+
+                if(list == null)
+                {
+                    config.NotManagedDirectories = defaultConfig.NotManagedDirectories;
+                    Save();
+                    list = (defaultConfig.NotManagedDirectories as JArray).Select(x => x.Value<string>()).ToList();
+                }
+
+                return list;
+            }
+        }
+
+        public bool IsManaged(string directory)
+        {
+            return !(NotManagedDirectories.Contains(directory)
+                || NotManagedDirectories.Contains(Path.GetFileName(directory)));
+        }
+
         public bool CloseOnEscape
         {
             get
@@ -117,6 +180,72 @@ namespace QuickDir
                 try
                 {
                     config.CloseOnEscape = value;
+                    Save();
+                }
+                catch { }
+
+                NotifyPropertyChanged();
+            }
+        }
+
+        public bool SearchFavByKeys
+        {
+            get
+            {
+                try
+                {
+                    return config.SearchFavByKeys;
+                }
+                catch
+                {
+                    try
+                    {
+                        config.SearchFavByKeys = defaultConfig.SearchFavByKeys;
+                        Save();
+                    }
+                    catch { }
+                    return defaultConfig.SearchFavByKeys;
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    config.SearchFavByKeys = value;
+                    Save();
+                }
+                catch { }
+
+                NotifyPropertyChanged();
+            }
+        }
+
+        public bool SmartSearchOnFavs
+        {
+            get
+            {
+                try
+                {
+                    return config.SmartSearchOnFavs;
+                }
+                catch
+                {
+                    try
+                    {
+                        config.SmartSearchOnFavs = defaultConfig.SmartSearchOnFavs;
+                        Save();
+                    }
+                    catch { }
+                    return defaultConfig.SmartSearchOnFavs;
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    config.SmartSearchOnFavs = value;
                     Save();
                 }
                 catch { }
