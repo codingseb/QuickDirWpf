@@ -97,6 +97,21 @@ namespace QuickDir
             , IntPtr.Zero);
         }
 
+        private static bool GetBoolFromString(string stringValue)
+        {
+            string sResult = stringValue.Trim(' ', '\t');
+            bool result = sResult.Equals("1")
+                || sResult.ToLower().Equals("yes")
+                || sResult.ToLower().Equals("on")
+                || sResult.ToLower().Equals("true") ? true :
+                (sResult.Equals("0")
+                || sResult.ToLower().Equals("no")
+                || sResult.ToLower().Equals("off")
+                || sResult.ToLower().Equals("false") ? false : bool.Parse(sResult));
+
+            return result;
+        }
+
         private static List<QDCommand> commandsList = (new QDCommand[]
         {
             new QDCommand("Set Close on Escape key press" , delegate(string name)
@@ -188,21 +203,11 @@ namespace QuickDir
                 {
                     try
                     {
-                        string sResult = commandsArgsArray[1].Trim(' ', '\t');
-                        bool result = sResult.Equals("1")
-                            || sResult.ToLower().Equals("yes")
-                            || sResult.ToLower().Equals("on")
-                            || sResult.ToLower().Equals("true") ? true :
-                            (sResult.Equals("0")
-                            || sResult.ToLower().Equals("no")
-                            || sResult.ToLower().Equals("off")
-                            || sResult.ToLower().Equals("false") ? false : bool.Parse(sResult));
-
-                        Config.Instance.SearchFavByKeys = result;
+                        Config.Instance.SearchFavByKeys = GetBoolFromString(commandsArgsArray[1]);
                     }
                     catch(Exception ex)
                     {
-                        MessageBox.Show("Impossible to attribute the Search Favs by Keys value. " + ex.Message);
+                        MessageBox.Show("Impossible to attribute the " + name + " value. " + ex.Message);
                     }
 
                     return true;
@@ -225,21 +230,11 @@ namespace QuickDir
                 {
                     try
                     {
-                        string sResult = commandsArgsArray[1].Trim(' ', '\t');
-                        bool result = sResult.Equals("1")
-                            || sResult.ToLower().Equals("yes")
-                            || sResult.ToLower().Equals("on")
-                            || sResult.ToLower().Equals("true") ? true :
-                            (sResult.Equals("0")
-                            || sResult.ToLower().Equals("no")
-                            || sResult.ToLower().Equals("off")
-                            || sResult.ToLower().Equals("false") ? false : bool.Parse(sResult));
-
-                        Config.Instance.SmartSearchOnFavs = result;
+                        Config.Instance.SmartSearchOnFavs = GetBoolFromString(commandsArgsArray[1]); ;
                     }
                     catch(Exception ex)
                     {
-                        MessageBox.Show("Impossible to attribute the SmartSearch on Favs value. " + ex.Message);
+                        MessageBox.Show("Impossible to attribute the " + name + " value. " + ex.Message);
                     }
 
                     return true;
@@ -247,6 +242,33 @@ namespace QuickDir
                 else
                 {
                     string current = Config.Instance.SmartSearchOnFavs.ToString();
+
+                    txtField.Text = "> " + name + ":" + current;
+                    txtField.Select(txtField.Text.Length - current.Length, current.Length);
+                    return false;
+                }
+            }),
+            new QDCommand("SmartSearch on Directories", delegate(string name)
+            {
+                TextBox txtField = MainWindow.Instance.txtDirRequest;
+                string[] commandsArgsArray = MainWindow.Instance.txtDirRequest.Text.Split(':');
+
+                if(commandsArgsArray.Length > 1)
+                {
+                    try
+                    {
+                        Config.Instance.SmartSearchOnDirectories = GetBoolFromString(commandsArgsArray[1]); ;
+                    }
+                    catch(Exception ex)
+                    {
+                        MessageBox.Show("Impossible to attribute the " + name + " value. " + ex.Message);
+                    }
+
+                    return true;
+                }
+                else
+                {
+                    string current = Config.Instance.SmartSearchOnDirectories.ToString();
 
                     txtField.Text = "> " + name + ":" + current;
                     txtField.Select(txtField.Text.Length - current.Length, current.Length);

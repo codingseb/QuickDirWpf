@@ -222,6 +222,14 @@ namespace QuickDir
                             .ConvertAll(f => new AutoCompleteItem(f, Config.Instance.GetFav(f), Config.Instance.GetFav(f))));
                     }
 
+                    if (Config.Instance.SmartSearchOnDirectories 
+                        && !txtDirRequest.Text.Equals(string.Empty))
+                    {
+                        completeList.AddRange(SmartSearch.SmartSearchInDirectories(txtDirRequest.Text)
+                            .OrderBy(e => e)
+                            .ToList()
+                            .ConvertAll(d => new AutoCompleteItem(d)));
+                    }
                 }
             }
             catch(Exception ex)

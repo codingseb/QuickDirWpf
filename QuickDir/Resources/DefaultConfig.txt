@@ -2,6 +2,7 @@
     Favs: { },
 	SearchFavByKeys: true,
 	SmartSearchOnFavs: true,
+	SmartSearchOnDirectories: false,
 	CloseOnEscape: true,
     MaxHeight: 300,
 	Width: 800,

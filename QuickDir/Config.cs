@@ -254,6 +254,39 @@ namespace QuickDir
             }
         }
 
+        public bool SmartSearchOnDirectories
+        {
+            get
+            {
+                try
+                {
+                    return config.SmartSearchOnDirectories;
+                }
+                catch
+                {
+                    try
+                    {
+                        config.SmartSearchOnDirectories = defaultConfig.SmartSearchOnDirectories;
+                        Save();
+                    }
+                    catch { }
+                    return defaultConfig.SmartSearchOnDirectories;
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    config.SmartSearchOnDirectories = value;
+                    Save();
+                }
+                catch { }
+
+                NotifyPropertyChanged();
+            }
+        }
+
         public List<string> FavsList
         {
             get
