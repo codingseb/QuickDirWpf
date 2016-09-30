@@ -32,18 +32,7 @@ namespace QuickDir
 
             List<string> allDirectories = new List<string>();
 
-            DateTime start = DateTime.Now;
-
-            allDirectories = Process.Start(new ProcessStartInfo
-            {
-                FileName = "cmd",
-                Arguments = "/C dir \"c:\\\" /a:d /s /b",
-                RedirectStandardOutput = true,
-                CreateNoWindow = true,
-                UseShellExecute = false
-            }).StandardOutput.ReadToEnd().Split(new string[]{"\r\n", "\r", "\n"}, StringSplitOptions.RemoveEmptyEntries).ToList();
-
-            MessageBox.Show((DateTime.Now - start).ToString());
+            
 
             return allDirectories;
         }

@@ -14,8 +14,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 namespace QuickDir
 {
     /// <summary>
@@ -51,7 +49,9 @@ namespace QuickDir
             {
                 if (e.Key == Key.Escape)
                 {
-                    if (txtDirRequest.Text.Equals(string.Empty))
+                    if (Popup.IsActive)
+                        Popup.Close();
+                    else if (txtDirRequest.Text.Equals(string.Empty))
                     {
                         if (Config.Instance.CloseOnEscape)
                             this.Close();
@@ -168,6 +168,7 @@ namespace QuickDir
         private void FillCompletion()
         {
             List<AutoCompleteItem> completeList = new List<AutoCompleteItem>();
+            Popup.Close();
 
             try
             {
@@ -177,7 +178,8 @@ namespace QuickDir
                 }
                 else
                 {
-                    List<string> levels = txtDirRequest.Text.Split('\\', '/').ToList();
+                    string path = txtDirRequest.Text.Replace("/", @"\");
+                    List<string> levels = path.Split('\\').ToList();
                     string fav = Config.Instance.GetFav(txtDirRequest.Text);
 
                     if (levels.Count == 1)
@@ -199,7 +201,12 @@ namespace QuickDir
                     }
                     else
                     {
-                        string parentDir = parentDirRegex.Replace(txtDirRequest.Text, "");
+                        if(!levels[0].Contains(":") && Directory.GetLogicalDrives().Contains(levels[0].ToUpper() + @":\"))
+                        {
+                            path = Regex.Replace(path, @"^[^\\]+", levels[0].ToUpper() + ":");
+                        }
+
+                        string parentDir = parentDirRegex.Replace(path, "");
                         string searchSubDir = levels.Last();
 
                         completeList = Directory.GetDirectories(parentDir, searchSubDir + "*")
@@ -232,9 +239,13 @@ namespace QuickDir
                     }
                 }
             }
+            catch(DirectoryNotFoundException ex)
+            {
+                Popup.Show(ex.Message, true);
+            }
             catch(Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                Popup.Show(ex.Message);
             }
 
             try
@@ -333,5 +344,21 @@ namespace QuickDir
             }
             catch { }
         }
+
+        private void btnPopupClose_Click(object sender, RoutedEventArgs e)
+        {
+            Popup.Close();            
+        }
+
+        private void btnCreateDir_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Directory.CreateDirectory(txtDirRequest.Text);
+            }
+            catch { }
+            FillCompletion();
+        }
+
     }
 }

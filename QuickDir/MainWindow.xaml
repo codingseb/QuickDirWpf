@@ -17,6 +17,28 @@
                 <TextBlock Margin="4,2" FontSize="14" VerticalAlignment="Center">Search folder here (F5 or Ctrl+Enter Show the folder, F6 or Alt+Enter open terminal on folder)</TextBlock>
             </controls:WatermarkService.Watermark>
         </TextBox>
+        <Grid Background="LightYellow">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Label Name="lblStatus" 
+                   Visibility="Collapsed"/>
+            <Button Name="btnCreateDir" 
+                    Visibility="Collapsed" 
+                    Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                    Content="Create"
+                    Click="btnCreateDir_Click"
+                    Grid.Column="1"/>
+            <Button Name="btnPopupClose" 
+                    Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" 
+                    Content="X"
+                    Width="30"
+                    Visibility="Collapsed" 
+                    Click="btnPopupClose_Click"
+                    Grid.Column="2"/>
+        </Grid>
         <ListBox Name="lbCompletion" 
                  MaxHeight="{Binding MaxHeight}" 
                  SelectionChanged="lbCompletion_SelectionChanged"
