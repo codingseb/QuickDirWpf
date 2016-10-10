@@ -274,15 +274,15 @@ namespace QuickDir
             string[] favEqArray = txtDirRequest.Text.Split('=');
 
             if (favEqArray.Length == 2
-                && Directory.Exists(favEqArray[1])
-                && !favEqArray[0].Equals(string.Empty))
+                && (Directory.Exists(favEqArray[1])
+                    || favEqArray[1].Equals(string.Empty)))
             {
                 if (Config.Instance.SetFav(favEqArray[0], favEqArray[1]))
                     SetFieldValue(favEqArray[0]);
             }
             else if (favEqArray.Length == 2
-                && Directory.Exists(favEqArray[0])
-                && !favEqArray[1].Equals(string.Empty))
+                && (Directory.Exists(favEqArray[0])
+                    || favEqArray[0].Equals(string.Empty)))
             {
                 if (Config.Instance.SetFav(favEqArray[1], favEqArray[0]))
                     SetFieldValue(favEqArray[1]);

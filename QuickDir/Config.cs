@@ -313,7 +313,14 @@ namespace QuickDir
 
             try
             {
-                config.Favs[key] = path;
+                if (path.Equals(string.Empty))
+                {
+                    config.Favs.Remove(key);
+                }
+                else
+                {
+                    config.Favs[key] = path;
+                }
                 Save();
                 result = true;
             }
