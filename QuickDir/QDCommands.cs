@@ -275,6 +275,13 @@ namespace QuickDir
                     return false;
                 }
             }),
+            new QDCommand("Clear Smart History", delegate(string name)
+            {
+                if(MessageBox.Show("It will empty the history. Do you validate ?", "Clear", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    Config.Instance.ClearHistory();
+
+                return true;
+            }),
             new QDCommand("SmartSearch on Directories", delegate(string name)
             {
                 TextBox txtField = MainWindow.Instance.txtDirRequest;

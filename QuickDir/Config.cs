@@ -384,6 +384,11 @@ namespace QuickDir
             return result;
         }
 
+        public void ClearHistory()
+        {
+            config["History"] = new JArray();
+        }
+
         public bool SetFav(string key, string path)
         {
             bool result = false;
