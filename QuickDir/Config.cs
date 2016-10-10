@@ -336,6 +336,7 @@ namespace QuickDir
                 EnsureHistoryPropertyExist();
                 JArray arr = config.History as JArray;
                 if (Directory.Exists(path)
+                    && !Path.IsPathRooted(path)
                     && arr.ToList().Find(token => token.ToString().ToLower().Equals(path.ToLower())) == null)
                 {
                     arr.Add(path);
