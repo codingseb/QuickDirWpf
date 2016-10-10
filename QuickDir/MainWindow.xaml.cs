@@ -240,15 +240,18 @@ namespace QuickDir
                             .ConvertAll(d => new AutoCompleteItem(d)));
                     }
 
-                    completeList.AddRange(Config.Instance.History
-                        .FindAll(e =>
-                                Regex.IsMatch(e.ToLower(), findTextPattern.ToLower())
-                                    && !e.ToLower().Equals(txtDirRequest.Text.ToLower())
-                                    && completeList.Find(f => f.AutoComplete.ToLower().Equals(e.ToLower())) == null
-                            )
-                        .OrderBy(e => e)
-                        .ToList()
-                        .ConvertAll(h => new AutoCompleteItem(h)));
+                    if (Config.Instance.SmartHistory)
+                    {
+                        completeList.AddRange(Config.Instance.History
+                            .FindAll(e =>
+                                    Regex.IsMatch(e.ToLower(), findTextPattern.ToLower())
+                                        && !e.ToLower().Equals(txtDirRequest.Text.ToLower())
+                                        && completeList.Find(f => f.AutoComplete.ToLower().Equals(e.ToLower())) == null
+                                )
+                            .OrderBy(e => e)
+                            .ToList()
+                            .ConvertAll(h => new AutoCompleteItem(h)));
+                    }
                 }
             }
             catch(DirectoryNotFoundException ex)

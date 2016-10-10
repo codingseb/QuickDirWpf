@@ -254,6 +254,39 @@ namespace QuickDir
             }
         }
 
+        public bool SmartHistory
+        {
+            get
+            {
+                try
+                {
+                    return config.SmartHistory;
+                }
+                catch
+                {
+                    try
+                    {
+                        config.SmartHistory = defaultConfig.SmartHistory;
+                        Save();
+                    }
+                    catch { }
+                    return defaultConfig.SmartHistory;
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    config.SmartHistory = value;
+                    Save();
+                }
+                catch { }
+
+                NotifyPropertyChanged();
+            }
+        }
+
         public bool SmartSearchOnDirectories
         {
             get
@@ -335,7 +368,8 @@ namespace QuickDir
             {
                 EnsureHistoryPropertyExist();
                 JArray arr = config.History as JArray;
-                if (Directory.Exists(path)
+                if (SmartHistory
+                    && Directory.Exists(path)
                     && !Path.IsPathRooted(path)
                     && arr.ToList().Find(token => token.ToString().ToLower().Equals(path.ToLower())) == null)
                 {

@@ -248,6 +248,33 @@ namespace QuickDir
                     return false;
                 }
             }),
+            new QDCommand("Smart History", delegate(string name)
+            {
+                TextBox txtField = MainWindow.Instance.txtDirRequest;
+                string[] commandsArgsArray = MainWindow.Instance.txtDirRequest.Text.Split(':');
+
+                if(commandsArgsArray.Length > 1)
+                {
+                    try
+                    {
+                        Config.Instance.SmartHistory = GetBoolFromString(commandsArgsArray[1]); ;
+                    }
+                    catch(Exception ex)
+                    {
+                        MessageBox.Show("Impossible to attribute the " + name + " value. " + ex.Message);
+                    }
+
+                    return true;
+                }
+                else
+                {
+                    string current = Config.Instance.SmartHistory.ToString();
+
+                    txtField.Text = "> " + name + ":" + current;
+                    txtField.Select(txtField.Text.Length - current.Length, current.Length);
+                    return false;
+                }
+            }),
             new QDCommand("SmartSearch on Directories", delegate(string name)
             {
                 TextBox txtField = MainWindow.Instance.txtDirRequest;
