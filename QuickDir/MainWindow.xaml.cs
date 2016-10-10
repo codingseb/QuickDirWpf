@@ -143,6 +143,7 @@ namespace QuickDir
             if (Directory.Exists(txtDirRequest.Text))
             {
                 Process.Start(txtDirRequest.Text);
+                Config.Instance.SetHistoryEntry(txtDirRequest.Text);
                 if(e != null)
                     e.Handled = true;
             }
@@ -155,6 +156,7 @@ namespace QuickDir
                 ProcessStartInfo psi = new ProcessStartInfo("cmd");
                 psi.WorkingDirectory = txtDirRequest.Text;
                 Process.Start(psi);
+                Config.Instance.SetHistoryEntry(txtDirRequest.Text);
                 if (e != null)
                     e.Handled = true;
             }
@@ -181,12 +183,14 @@ namespace QuickDir
                     string path = txtDirRequest.Text.Replace("/", @"\");
                     List<string> levels = path.Split('\\').ToList();
                     string fav = Config.Instance.GetFav(txtDirRequest.Text);
+                    string findTextPattern = SmartSearch.GetRegexSmartSearchPattern(txtDirRequest.Text);
 
                     if (levels.Count == 1)
                     {
                         completeList = Directory.GetLogicalDrives()
                             .ToList()
-                            .FindAll(drive => Config.Instance.IsManaged(drive) && drive.ToLower().StartsWith(levels[0].ToLower()))
+                            .FindAll(drive => Config.Instance.IsManaged(drive) 
+                                && drive.ToLower().StartsWith(levels[0].ToLower()))
                             .ConvertAll(drive => new AutoCompleteItem(drive));
 
                         if (Config.Instance.SearchFavByKeys)
@@ -217,8 +221,6 @@ namespace QuickDir
 
                     if(Config.Instance.SmartSearchOnFavs)
                     {
-                        string findTextPattern = SmartSearch.GetRegexSmartSearchPattern(txtDirRequest.Text);
-
                         completeList.AddRange(Config.Instance.FavsList
                             .FindAll(e => 
                                 Regex.IsMatch(Config.Instance.GetFav(e).ToLower(), findTextPattern.ToLower())
@@ -237,6 +239,14 @@ namespace QuickDir
                             .ToList()
                             .ConvertAll(d => new AutoCompleteItem(d)));
                     }
+
+                    completeList.AddRange(Config.Instance.History
+                        .FindAll(e =>
+                                Regex.IsMatch(e.ToLower(), findTextPattern.ToLower())
+                            )
+                        .OrderBy(e => e)
+                        .ToList()
+                        .ConvertAll(h => new AutoCompleteItem(h)));
                 }
             }
             catch(DirectoryNotFoundException ex)
@@ -339,6 +349,7 @@ namespace QuickDir
                     else
                     {
                         SetFieldValue((lbCompletion.SelectedItem as AutoCompleteItem).AutoComplete);
+                        Config.Instance.SetHistoryEntry(txtDirRequest.Text);
                     }
                 }
             }

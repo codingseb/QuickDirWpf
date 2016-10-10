@@ -1,15 +1,17 @@
 {
-    Favs: { },
-	SearchFavByKeys: true,
-	SmartSearchOnFavs: true,
-	SmartSearchOnDirectories: false,
-	CloseOnEscape: true,
+    SearchFavByKeys: true,
+    SmartSearchOnFavs: true,
+    SmartSearchOnDirectories: false,
+    SmartHistory: true,
+    CloseOnEscape: true,
     MaxHeight: 300,
-	Width: 800,
-	NotManagedDirectories : [
-		"$Recycle.Bin",
-		"$RECYCLE.BIN",
+    Width: 800,
+    Favs: {},
+    History: [],
+    NotManagedDirectories: [
+        "$Recycle.Bin",
+        "$RECYCLE.BIN",
         "System Volume Information",
         "Documents and Settings"
-	]
+    ]
 }

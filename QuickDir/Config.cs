@@ -307,6 +307,48 @@ namespace QuickDir
             }
         }
 
+        private void EnsureHistoryPropertyExist()
+        {
+            if (config["History"] == null)
+            {
+                config.Add("History", new JArray());
+                Save();
+            }
+        }
+
+        public List<string> History
+        {
+            get
+            {
+                EnsureHistoryPropertyExist();
+
+                return (config.History as JArray).ToList()
+                    .ConvertAll(token => token.ToString());
+            }
+        }
+
+        public bool SetHistoryEntry(string path)
+        {
+            bool result = false;
+
+            try
+            {
+                EnsureHistoryPropertyExist();
+                JArray arr = config.History as JArray;
+                if (Directory.Exists(path)
+                    && arr.ToList().Find(token => token.ToString().ToLower().Equals(path.ToLower())) == null)
+                {
+                    arr.Add(path);
+                    Save();
+                }
+
+                result = true;
+            }
+            catch { }
+
+            return result;
+        }
+
         public bool SetFav(string key, string path)
         {
             bool result = false;
