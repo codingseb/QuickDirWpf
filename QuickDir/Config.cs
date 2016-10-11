@@ -373,7 +373,7 @@ namespace QuickDir
                     && !Path.GetPathRoot(path).ToLower().Equals(path.ToLower())
                     && arr.ToList().Find(token => token.ToString().ToLower().Equals(path.ToLower())) == null)
                 {
-                    arr.Add(path);
+                    arr.Add(path + (path.EndsWith(@"\") ? "" : @"\"));
                     Save();
                 }
 
@@ -383,6 +383,8 @@ namespace QuickDir
 
             return result;
         }
+
+
 
         public void ClearHistory()
         {

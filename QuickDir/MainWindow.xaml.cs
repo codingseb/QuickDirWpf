@@ -143,7 +143,6 @@ namespace QuickDir
             if (Directory.Exists(txtDirRequest.Text))
             {
                 Process.Start(txtDirRequest.Text);
-                Config.Instance.SetHistoryEntry(txtDirRequest.Text);
                 if(e != null)
                     e.Handled = true;
             }
@@ -156,7 +155,6 @@ namespace QuickDir
                 ProcessStartInfo psi = new ProcessStartInfo("cmd");
                 psi.WorkingDirectory = txtDirRequest.Text;
                 Process.Start(psi);
-                Config.Instance.SetHistoryEntry(txtDirRequest.Text);
                 if (e != null)
                     e.Handled = true;
             }
@@ -201,7 +199,6 @@ namespace QuickDir
                                 .ToList()
                                 .ConvertAll(f => new AutoCompleteItem(f, Config.Instance.GetFav(f), Config.Instance.GetFav(f))));
                         }
-
                     }
                     else
                     {
@@ -213,10 +210,23 @@ namespace QuickDir
                         string parentDir = parentDirRegex.Replace(path, "");
                         string searchSubDir = levels.Last();
 
+                        Config.Instance.SetHistoryEntry(parentDir);
+
                         completeList = Directory.GetDirectories(parentDir, searchSubDir + "*")
                             .ToList()
                             .FindAll(p => Config.Instance.IsManaged(p))
                             .ConvertAll(p => new AutoCompleteItem(p + @"\"));
+
+                        if (Config.Instance.SmartSearchOnDirectories)
+                        {
+                            completeList.AddRange(Directory.GetDirectories(parentDir)
+                                .ToList()
+                                .FindAll(e => Regex.IsMatch(e.ToLower(), findTextPattern.ToLower())
+                                    && completeList.Find(f => f.AutoComplete.ToLower().Equals(e.ToLower() + @"\")) == null)
+                                .OrderBy(e => e)
+                                .ToList()
+                                .ConvertAll(d => new AutoCompleteItem(d + @"\")));
+                        }
                     }
 
                     if(Config.Instance.SmartSearchOnFavs)
@@ -229,15 +239,6 @@ namespace QuickDir
                             .OrderBy(e => e)
                             .ToList()
                             .ConvertAll(f => new AutoCompleteItem(f, Config.Instance.GetFav(f), Config.Instance.GetFav(f))));
-                    }
-
-                    if (Config.Instance.SmartSearchOnDirectories 
-                        && !txtDirRequest.Text.Equals(string.Empty))
-                    {
-                        completeList.AddRange(SmartSearch.SmartSearchInDirectories(txtDirRequest.Text)
-                            .OrderBy(e => e)
-                            .ToList()
-                            .ConvertAll(d => new AutoCompleteItem(d)));
                     }
 
                     if (Config.Instance.SmartHistory)
@@ -354,7 +355,6 @@ namespace QuickDir
                     else
                     {
                         SetFieldValue((lbCompletion.SelectedItem as AutoCompleteItem).AutoComplete);
-                        Config.Instance.SetHistoryEntry(txtDirRequest.Text);
                     }
                 }
             }
