@@ -370,7 +370,7 @@ namespace QuickDir
                 JArray arr = config.History as JArray;
                 if (SmartHistory
                     && Directory.Exists(path)
-                    && !Path.IsPathRooted(path)
+                    && !Path.GetPathRoot(path).ToLower().Equals(path.ToLower())
                     && arr.ToList().Find(token => token.ToString().ToLower().Equals(path.ToLower())) == null)
                 {
                     arr.Add(path);
