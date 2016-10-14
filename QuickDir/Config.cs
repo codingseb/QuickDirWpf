@@ -92,7 +92,7 @@ namespace QuickDir
             }
         }
 
-        public double Width
+        public int Width
         {
             get
             {
@@ -312,6 +312,72 @@ namespace QuickDir
                 try
                 {
                     config.SmartSearchOnDirectories = value;
+                    Save();
+                }
+                catch { }
+
+                NotifyPropertyChanged();
+            }
+        }
+
+        public bool EmptyOnValidate
+        {
+            get
+            {
+                try
+                {
+                    return config.EmptyOnValidate;
+                }
+                catch
+                {
+                    try
+                    {
+                        config.EmptyOnValidate = defaultConfig.EmptyOnValidate;
+                        Save();
+                    }
+                    catch { }
+                    return defaultConfig.EmptyOnValidate;
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    config.EmptyOnValidate = value;
+                    Save();
+                }
+                catch { }
+
+                NotifyPropertyChanged();
+            }
+        }
+
+        public bool MinimizeOnValidate
+        {
+            get
+            {
+                try
+                {
+                    return config.MinimizeOnValidate;
+                }
+                catch
+                {
+                    try
+                    {
+                        config.MinimizeOnValidate = defaultConfig.MinimizeOnValidate;
+                        Save();
+                    }
+                    catch { }
+                    return defaultConfig.MinimizeOnValidate;
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    config.MinimizeOnValidate = value;
                     Save();
                 }
                 catch { }

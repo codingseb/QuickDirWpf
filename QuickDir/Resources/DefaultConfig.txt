@@ -4,6 +4,8 @@
     SmartSearchOnDirectories: false,
     SmartHistory: true,
     CloseOnEscape: true,
+	EmptyOnValidate: true,
+	MinimizeOnValidate: true,
     MaxHeight: 300,
     Width: 800,
     Favs: {},

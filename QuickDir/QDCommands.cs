@@ -112,6 +112,88 @@ namespace QuickDir
             return result;
         }
 
+        private static void SetBoolConfig(string configName, bool value)
+        {
+            Config.Instance.GetType().GetProperty(configName)
+                .SetValue(Config.Instance, value);
+        }
+
+        private static bool GetBoolConfig(string configName)
+        {
+            return (bool)Config.Instance.GetType().GetProperty(configName)
+                .GetValue(Config.Instance);
+        }
+
+        private static bool SetBoolCommand(string name, string configName)
+        {
+                TextBox txtField = MainWindow.Instance.txtDirRequest;
+                string[] commandsArgsArray = MainWindow.Instance.txtDirRequest.Text.Split(':');
+
+                if(commandsArgsArray.Length > 1)
+                {
+                    try
+                    {
+                        SetBoolConfig(configName, GetBoolFromString(commandsArgsArray[1]));
+                    }
+                    catch(Exception ex)
+                    {
+                        MessageBox.Show("Impossible to attribute the " + name + " value. " + ex.Message);
+                    }
+
+                    return true;
+                }
+                else
+                {
+                    string current = GetBoolConfig(configName).ToString();
+
+                    txtField.Text = "> " + name + ":" + current;
+                    txtField.Select(txtField.Text.Length - current.Length, current.Length);
+                    return false;
+                }
+        }
+
+        private static void SetIntConfig(string configName, int value)
+        {
+            Config.Instance.GetType().GetProperty(configName)
+                .SetValue(Config.Instance, value);
+        }
+
+        private static int GetIntConfig(string configName)
+        {
+            return (int)Config.Instance.GetType().GetProperty(configName)
+                .GetValue(Config.Instance);
+        }
+
+        private static bool SetIntCommand(string name, string configName)
+        {
+            TextBox txtField = MainWindow.Instance.txtDirRequest;
+            string[] commandsArgsArray = MainWindow.Instance.txtDirRequest.Text.Split(':');
+
+            if (commandsArgsArray.Length > 1)
+            {
+                try
+                {
+                    int width = int.Parse(commandsArgsArray[1].Trim(' ', '\t'));
+
+                    SetIntConfig(configName, width);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Impossible to set the width. " + ex.Message);
+                }
+
+                return true;
+            }
+            else
+            {
+                string currentWidth = GetIntConfig(configName).ToString();
+
+                txtField.Text = "> " + name + ":" + currentWidth;
+                txtField.Select(txtField.Text.Length - currentWidth.Length, currentWidth.Length);
+                return false;
+            }
+        }
+
         private static List<QDCommand> commandsList = (new QDCommand[]
         {
             new QDCommand("Set Close on Escape key press" , delegate(string name)
@@ -138,142 +220,23 @@ namespace QuickDir
             }),
             new QDCommand("Set Field Width", delegate(string name)
             {
-                TextBox txtField = MainWindow.Instance.txtDirRequest;
-                string[] commandsArgsArray = MainWindow.Instance.txtDirRequest.Text.Split(':');
-
-                if(commandsArgsArray.Length > 1)
-                {
-                    try
-                    {
-                        int width = int.Parse(commandsArgsArray[1].Trim(' ', '\t'));
-
-                        MainWindow.Instance.Width = width;
-                    }
-                    catch(Exception ex)
-                    {
-                        MessageBox.Show("Impossible to set the width. " + ex.Message);
-                    }
-
-                    return true;
-                }
-                else
-                {
-                    string currentWidth = Convert.ToInt32(Math.Floor(MainWindow.Instance.Width)).ToString();
-
-                    txtField.Text = "> " + name + ":" + currentWidth;
-                    txtField.Select(txtField.Text.Length - currentWidth.Length, currentWidth.Length);
-                    return false;
-                }
+                return SetIntCommand(name, "Width");
             }),
             new QDCommand("Set Max Height", delegate(string name)
             {
-                TextBox txtField = MainWindow.Instance.txtDirRequest;
-                string[] commandsArgsArray = MainWindow.Instance.txtDirRequest.Text.Split(':');
-
-                if(commandsArgsArray.Length > 1)
-                {
-                    try
-                    {
-                        int maxHeight = int.Parse(commandsArgsArray[1].Trim(' ', '\t'));
-
-                        Config.Instance.MaxHeight = maxHeight;
-                    }
-                    catch(Exception ex)
-                    {
-                        MessageBox.Show("Impossible to set the max height. " + ex.Message);
-                    }
-
-                    return true;
-                }
-                else
-                {
-                    string currentMaxHeight = Config.Instance.MaxHeight.ToString();
-
-                    txtField.Text = "> " + name + ":" + currentMaxHeight;
-                    txtField.Select(txtField.Text.Length - currentMaxHeight.Length, currentMaxHeight.Length);
-                    return false;
-                }
+                return SetIntCommand(name, "MaxHeight");
             }),
-            new QDCommand("Search Favs by Keys", delegate(string name)
+            new QDCommand("Activate Search Favs by Keys", delegate(string name)
             {
-                TextBox txtField = MainWindow.Instance.txtDirRequest;
-                string[] commandsArgsArray = MainWindow.Instance.txtDirRequest.Text.Split(':');
-
-                if(commandsArgsArray.Length > 1)
-                {
-                    try
-                    {
-                        Config.Instance.SearchFavByKeys = GetBoolFromString(commandsArgsArray[1]);
-                    }
-                    catch(Exception ex)
-                    {
-                        MessageBox.Show("Impossible to attribute the " + name + " value. " + ex.Message);
-                    }
-
-                    return true;
-                }
-                else
-                {
-                    string current = Config.Instance.SearchFavByKeys.ToString();
-
-                    txtField.Text = "> " + name + ":" + current;
-                    txtField.Select(txtField.Text.Length - current.Length, current.Length);
-                    return false;
-                }
+                return SetBoolCommand(name, "SearchFavByKeys");
             }),
-            new QDCommand("SmartSearch on Favs", delegate(string name)
+            new QDCommand("Activate SmartSearch on Favs", delegate(string name)
             {
-                TextBox txtField = MainWindow.Instance.txtDirRequest;
-                string[] commandsArgsArray = MainWindow.Instance.txtDirRequest.Text.Split(':');
-
-                if(commandsArgsArray.Length > 1)
-                {
-                    try
-                    {
-                        Config.Instance.SmartSearchOnFavs = GetBoolFromString(commandsArgsArray[1]); ;
-                    }
-                    catch(Exception ex)
-                    {
-                        MessageBox.Show("Impossible to attribute the " + name + " value. " + ex.Message);
-                    }
-
-                    return true;
-                }
-                else
-                {
-                    string current = Config.Instance.SmartSearchOnFavs.ToString();
-
-                    txtField.Text = "> " + name + ":" + current;
-                    txtField.Select(txtField.Text.Length - current.Length, current.Length);
-                    return false;
-                }
+                return SetBoolCommand(name, "SmartSearchOnFavs");
             }),
-            new QDCommand("Smart History", delegate(string name)
+            new QDCommand("Activate Smart History", delegate(string name)
             {
-                TextBox txtField = MainWindow.Instance.txtDirRequest;
-                string[] commandsArgsArray = MainWindow.Instance.txtDirRequest.Text.Split(':');
-
-                if(commandsArgsArray.Length > 1)
-                {
-                    try
-                    {
-                        Config.Instance.SmartHistory = GetBoolFromString(commandsArgsArray[1]); ;
-                    }
-                    catch(Exception ex)
-                    {
-                        MessageBox.Show("Impossible to attribute the " + name + " value. " + ex.Message);
-                    }
-
-                    return true;
-                }
-                else
-                {
-                    string current = Config.Instance.SmartHistory.ToString();
-
-                    txtField.Text = "> " + name + ":" + current;
-                    txtField.Select(txtField.Text.Length - current.Length, current.Length);
-                    return false;
-                }
+                return SetBoolCommand(name, "SmartHistory");
             }),
             new QDCommand("Clear Smart History", delegate(string name)
             {
@@ -282,32 +245,17 @@ namespace QuickDir
 
                 return true;
             }),
-            new QDCommand("SmartSearch on Directories", delegate(string name)
+            new QDCommand("Activate SmartSearch on Directories", delegate(string name)
             {
-                TextBox txtField = MainWindow.Instance.txtDirRequest;
-                string[] commandsArgsArray = MainWindow.Instance.txtDirRequest.Text.Split(':');
-
-                if(commandsArgsArray.Length > 1)
-                {
-                    try
-                    {
-                        Config.Instance.SmartSearchOnDirectories = GetBoolFromString(commandsArgsArray[1]); ;
-                    }
-                    catch(Exception ex)
-                    {
-                        MessageBox.Show("Impossible to attribute the " + name + " value. " + ex.Message);
-                    }
-
-                    return true;
-                }
-                else
-                {
-                    string current = Config.Instance.SmartSearchOnDirectories.ToString();
-
-                    txtField.Text = "> " + name + ":" + current;
-                    txtField.Select(txtField.Text.Length - current.Length, current.Length);
-                    return false;
-                }
+                return SetBoolCommand(name, "SmartSearchOnDirectories");
+            }),
+            new QDCommand("Minimize On Validation", delegate(string name)
+            {
+                return SetBoolCommand(name, "MinimizeOnValidate");
+            }),            
+            new QDCommand("Empty Field On Validation", delegate(string name)
+            {
+                return SetBoolCommand(name, "EmptyOnValidate");
             }),
             new QDCommand("Exit", delegate(string name){
                 MainWindow.Instance.Close();

@@ -143,6 +143,7 @@ namespace QuickDir
             if (Directory.Exists(txtDirRequest.Text))
             {
                 Process.Start(txtDirRequest.Text);
+                OnDirAction();
                 if(e != null)
                     e.Handled = true;
             }
@@ -155,9 +156,18 @@ namespace QuickDir
                 ProcessStartInfo psi = new ProcessStartInfo("cmd");
                 psi.WorkingDirectory = txtDirRequest.Text;
                 Process.Start(psi);
+                OnDirAction();
                 if (e != null)
                     e.Handled = true;
             }
+        }
+
+        private void OnDirAction()
+        {
+            if(Config.Instance.EmptyOnValidate)
+                txtDirRequest.Text = string.Empty;
+            if (Config.Instance.MinimizeOnValidate)
+                this.WindowState = System.Windows.WindowState.Minimized;
         }
 
         private void txtDirRequest_TextChanged(object sender, TextChangedEventArgs e)
