@@ -116,13 +116,16 @@ namespace QuickDir
             {
                 try
                 {
-                    if(MainWindow.Instance != null && MainWindow.Instance.WindowState != WindowState.Minimized)
+                    if (MainWindow.Instance != null 
+                        && MainWindow.Instance.WindowState != WindowState.Minimized
+                        && value != config.Width)
+                    {
                         config.Width = value;
-                    Save();
+                        Save();
+                        NotifyPropertyChanged();
+                    }
                 }
                 catch { }
-
-                NotifyPropertyChanged();
             }
         }
 
