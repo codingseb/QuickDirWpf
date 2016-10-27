@@ -38,11 +38,23 @@ namespace QuickDir
 
         public static List<string> FindCommands(string text)
         {
+            List<string> commandsTextsList = commandsList
+                .ConvertAll(command => command.Text);
+
+            List<string> result = commandsTextsList
+                .FindAll(command => command.ToLower().StartsWith(text.ToLower()));
+
+            result.AddRange(commandsTextsList
+                .FindAll(command => command.ToLower().Contains(text.ToLower())
+                    && !result.Contains(command)));
+
             string findTextPattern = SmartSearch.GetRegexSmartSearchPattern(text.Split(':')[0]);
 
-            return commandsList
-                .FindAll(command => Regex.IsMatch(command.Text.ToLower(), findTextPattern.ToLower()))
-                .ConvertAll(command => command.Text);
+            result.AddRange(commandsTextsList
+                .FindAll(command => Regex.IsMatch(command.ToLower(), findTextPattern.ToLower())
+                    && !result.Contains(command)));
+
+            return result;
         }
 
         private class QDCommand
